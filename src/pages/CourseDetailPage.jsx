@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getCourseById } from '../services/courseService';
-import { getAssessmentsForCourse, deleteAssessment as deleteAssessmentService } from '../services/assessmentService'; // <-- Import deleteAssessment
+import { getAssessmentsForCourse, deleteAssessment as deleteAssessmentService } from '../services/assessmentService';
 import { useAuth } from '../contexts/AuthContext';
+import { getFileDownloadUrl } from '../services/fileService'; // <-- Import getFileDownloadUrl
 
 function CourseDetailPage() {
   const { courseId } = useParams(); 
@@ -16,7 +17,7 @@ function CourseDetailPage() {
   const [assessments, setAssessments] = useState([]);
   const [isLoadingAssessments, setIsLoadingAssessments] = useState(true);
   const [assessmentsError, setAssessmentsError] = useState(null);
-  const [assessmentActionError, setAssessmentActionError] = useState(null); // For delete/edit errors
+  const [assessmentActionError, setAssessmentActionError] = useState(null);
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
@@ -40,11 +41,11 @@ function CourseDetailPage() {
     fetchCourseDetails();
   }, [courseId]);
 
-  const fetchAssessmentsForCourse = async () => { // Made this a callable function
+  const fetchAssessmentsForCourse = async () => { 
     if (course && course.courseId) { 
       setIsLoadingAssessments(true);
       setAssessmentsError(null);
-      setAssessmentActionError(null); // Clear action errors on re-fetch
+      setAssessmentActionError(null); 
       try {
         const data = await getAssessmentsForCourse(course.courseId);
         setAssessments(data);
@@ -61,7 +62,7 @@ function CourseDetailPage() {
 
   useEffect(() => {
     fetchAssessmentsForCourse();
-  }, [course, isLoadingCourse]); // Re-run when course is loaded
+  }, [course, isLoadingCourse]); 
 
   const isCourseOwner = currentUser && currentUser.role === 'Instructor' && course && course.instructorId === currentUser.userId;
 
@@ -70,7 +71,6 @@ function CourseDetailPage() {
     if (window.confirm(`Are you sure you want to delete the assessment "${assessmentTitle}"?`)) {
       try {
         await deleteAssessmentService(assessmentId);
-        // Refetch assessments to update the list OR filter locally
         setAssessments(prevAssessments => prevAssessments.filter(asm => asm.assessmentId !== assessmentId));
         alert(`Assessment "${assessmentTitle}" deleted successfully.`);
       } catch (err) {
@@ -82,7 +82,18 @@ function CourseDetailPage() {
     }
   };
 
-  if (isLoadingCourse) {
+  // Function to handle the download click
+  const handleDownloadMedia = (blobName) => {
+    if (blobName) {
+      const downloadUrl = getFileDownloadUrl(blobName);
+      // To initiate download, we can set window.location or use a hidden anchor,
+      // but directly setting window.location for a GET request that returns a file
+      // with Content-Disposition: attachment is usually the simplest.
+      window.location.href = downloadUrl;
+    }
+  };
+
+  if (isLoadingCourse) { /* ... loading JSX ... */ 
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
         <div className="spinner-border text-primary" role="status">
@@ -91,16 +102,14 @@ function CourseDetailPage() {
       </div>
     );
   }
-
-  if (courseError) {
+  if (courseError) { /* ... error JSX ... */ 
     return (
       <div className="alert alert-danger" role="alert">
         <strong>Error loading course:</strong> {courseError}
       </div>
     );
   }
-
-  if (!course) {
+  if (!course) { /* ... no course JSX ... */ 
     return (
       <div className="alert alert-warning" role="alert">
         Course not found. It might have been removed or the ID is incorrect.
@@ -111,59 +120,27 @@ function CourseDetailPage() {
     );
   }
 
-  const renderAssessments = () => {
+  const renderAssessments = () => { /* ... assessments rendering logic ... */ 
     if (isLoadingAssessments) {
-      return (
-        <div className="d-flex justify-content-center py-3">
-          <div className="spinner-border spinner-border-sm text-secondary" role="status">
-            <span className="visually-hidden">Loading assessments...</span>
-          </div>
-        </div>
-      );
+      return ( <div className="d-flex justify-content-center py-3"> <div className="spinner-border spinner-border-sm text-secondary" role="status"> <span className="visually-hidden">Loading assessments...</span> </div> </div> );
     }
-    if (assessmentsError) {
-      return <p className="text-danger px-3 py-2">Error loading assessments: {assessmentsError}</p>;
-    }
-    if (assessmentActionError) { // Display delete error specifically for assessments section
-        return <div className="alert alert-danger mx-3" role="alert">Error: {assessmentActionError}</div>;
-    }
-    if (assessments.length === 0) {
-      return <p className="text-muted px-3 py-2">No assessments available for this course yet.</p>;
-    }
+    if (assessmentsError) { return <p className="text-danger px-3 py-2">Error loading assessments: {assessmentsError}</p>; }
+    if (assessmentActionError) { return <div className="alert alert-danger mx-3" role="alert">Error: {assessmentActionError}</div>; }
+    if (assessments.length === 0) { return <p className="text-muted px-3 py-2">No assessments available for this course yet.</p>; }
     return (
       <ul className="list-group list-group-flush">
         {assessments.map(assessment => (
           <li key={assessment.assessmentId} className="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-            <div className="me-auto"> {/* Allow text to wrap */}
-              <h6 className="mb-1">{assessment.title}</h6>
-              <small className="text-muted">Max Score: {assessment.maxScore}</small>
-            </div>
-            <div className="btn-group mt-2 mt-sm-0" role="group" aria-label="Assessment Actions"> {/* mt-2 for small screens, mt-sm-0 for larger */}
+            <div className="me-auto"> <h6 className="mb-1">{assessment.title}</h6> <small className="text-muted">Max Score: {assessment.maxScore}</small> </div>
+            <div className="btn-group mt-2 mt-sm-0" role="group" aria-label="Assessment Actions"> 
               {isCourseOwner && (
                 <>
-                  <Link
-                    to={`/courses/${courseId}/assessments/${assessment.assessmentId}/edit`}
-                    className="btn btn-sm btn-outline-secondary"
-                    title="Edit Assessment"
-                  >
-                    <i className="bi bi-pencil-fill me-1"></i>Edit
-                  </Link>
-                  <button
-                    onClick={() => handleDeleteAssessment(assessment.assessmentId, assessment.title)}
-                    className="btn btn-sm btn-outline-danger"
-                    title="Delete Assessment"
-                  >
-                    <i className="bi bi-trash-fill me-1"></i>Delete
-                  </button>
+                  <Link to={`/courses/${courseId}/assessments/${assessment.assessmentId}/edit`} className="btn btn-sm btn-outline-secondary" title="Edit Assessment"> <i className="bi bi-pencil-fill me-1"></i>Edit </Link>
+                  <button onClick={() => handleDeleteAssessment(assessment.assessmentId, assessment.title)} className="btn btn-sm btn-outline-danger" title="Delete Assessment"> <i className="bi bi-trash-fill me-1"></i>Delete </button>
                 </>
               )}
               {currentUser && currentUser.role === 'Student' && (
-                <Link 
-                  to={`/assessment/${assessment.assessmentId}/attempt`} 
-                  className="btn btn-sm btn-outline-success"
-                >
-                  Attempt Quiz
-                </Link>
+                <Link to={`/assessment/${assessment.assessmentId}/attempt`} className="btn btn-sm btn-outline-success"> Attempt Quiz </Link>
               )}
             </div>
           </li>
@@ -174,7 +151,7 @@ function CourseDetailPage() {
 
   return (
     <div className="container mt-4">
-      <nav aria-label="breadcrumb">
+      <nav aria-label="breadcrumb"> {/* ... breadcrumb JSX ... */}
         <ol className="breadcrumb">
           <li className="breadcrumb-item"><Link to="/">Home</Link></li>
           <li className="breadcrumb-item"><Link to="/courses">Courses</Link></li>
@@ -182,46 +159,43 @@ function CourseDetailPage() {
         </ol>
       </nav>
 
-      <div className="card shadow-sm mb-4">
+      <div className="card shadow-sm mb-4"> {/* ... course details card JSX ... */}
         <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
           <h1 className="card-title mb-0 h2">{course.title}</h1>
-          {/* TODO: Add Edit/Delete course buttons for course owner later */}
         </div>
         <div className="card-body">
           <p className="card-text"><strong>Instructor:</strong> {course.instructorName || 'N/A'}</p>
           <p className="card-text"><strong>Description:</strong> {course.description || 'No description provided.'}</p>
           
-          {course.mediaUrl && (
-            <div className="mb-3">
-              <strong>Course Media:</strong>
-              <p>
-                <a href={course.mediaUrl} target="_blank" rel="noopener noreferrer" className="text-decoration-none">
-                  <i className="bi bi-link-45deg me-1"></i>{course.mediaUrl}
-                </a>
-              </p>
+          {/* === MODIFIED Course Media Section for Forced Download === */}
+          {course.mediaUrl && ( // Assuming course.mediaUrl now stores the blobName
+            <div className="mt-3">
+              <strong>Course Material:</strong>
+              <div className="mt-2">
+                <button 
+                  onClick={() => handleDownloadMedia(course.mediaUrl)} 
+                  className="btn btn-info"
+                >
+                  <i className="bi bi-download me-2"></i>Download Material 
+                </button>
+              </div>
             </div>
           )}
+          {/* === END MODIFIED Course Media Section === */}
         </div>
-        <div className="card-footer text-muted">
-          Course ID: {course.courseId}
-        </div>
+        <div className="card-footer text-muted"> Course ID: {course.courseId} </div>
       </div>
 
-      <div className="card shadow-sm">
+      <div className="card shadow-sm"> {/* ... assessments card JSX ... */}
         <div className="card-header d-flex justify-content-between align-items-center">
           <h4 className="mb-0">Assessments</h4>
           {isCourseOwner && (
-            <Link 
-              to={`/courses/${courseId}/assessments/create`} 
-              className="btn btn-sm btn-success"
-            >
+            <Link to={`/courses/${courseId}/assessments/create`} className="btn btn-sm btn-success">
               <i className="bi bi-plus-circle-fill me-1"></i>Create New Assessment
             </Link>
           )}
         </div>
-        <div className="card-body p-0">
-          {renderAssessments()}
-        </div>
+        <div className="card-body p-0"> {renderAssessments()} </div>
       </div>
 
       <div className="mt-4 mb-5">

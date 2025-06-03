@@ -1,37 +1,56 @@
+/* src/index.css */
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
+  color-scheme: light dark; /* Allows browser to adapt UI elements like scrollbars */
+  
+  /* Default text color and background for dark mode preference */
+  /* These might be overridden by your light mode styles below or specific component styles */
+  color: rgba(255, 255, 255, 0.87); 
   background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%; /* Vite default, good to keep */
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+html {
+  height: 100%; /* Ensure html takes full height */
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  margin: 0; /* Remove default browser margins */
+  min-height: 100vh; /* Ensure body takes at least full viewport height */
+  width: 100%; /* Ensure body takes full viewport width */
+  /* display: flex; <-- REMOVE THIS LINE */
+  /* place-items: center; <-- REMOVE THIS LINE */
+  background-color: var(--bs-body-bg, #fff); /* Use Bootstrap's body background or a default white for light mode */
+  color: var(--bs-body-color, #212529); /* Use Bootstrap's body text color or a default dark for light mode */
+}
+
+/* Ensure #root also takes full width and height if needed */
+#root {
+  width: 100%;
+  min-height: 100%; /* Or 100vh if you prefer it always matches viewport height */
+  /* Any max-width or margin: 0 auto; should have been removed from #root in App.css */
+}
+
+/* Keep your existing link, heading, button styles, etc., or refine them */
+a {
+  font-weight: 500;
+  color: #646cff; /* Consider using Bootstrap link color var(--bs-link-color) for consistency */
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2; /* Consider var(--bs-link-hover-color) */
 }
 
 h1 {
-  font-size: 3.2em;
+  font-size: 3.2em; /* This is quite large, ensure it's responsive or use Bootstrap heading classes */
   line-height: 1.1;
 }
 
@@ -42,7 +61,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  /* background-color: #1a1a1a; -- Defaulting to Bootstrap button styles might be better now */
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -54,15 +73,17 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Light mode specific overrides from your original file */
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    color: #213547; /* Default text color for light mode */
+    background-color: #ffffff; /* Default background for light mode */
   }
   a:hover {
     color: #747bff;
   }
-  button {
-    background-color: #f9f9f9;
-  }
+  /* Let Bootstrap handle button backgrounds or define specific button styles */
+  /* button {
+    background-color: #f9f9f9; 
+  } */
 }
