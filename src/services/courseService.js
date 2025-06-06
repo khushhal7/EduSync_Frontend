@@ -8,8 +8,8 @@ import axios from 'axios';
 // For this example, I'll use the one we know from your backend setup.
 // const API_BASE_URL = 'https://localhost:7142'; // Ensure this matches your backend's HTTPS port
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7142';
-const API_BASE_URL = 'https://edusynckhushhalbackend-edf5b3e2ajhyaqf2.centralindia-01.azurewebsites.net' || 'https://localhost:7142';
-
+// const API_BASE_URL = 'https://edusynckhushhalbackend-edf5b3e2ajhyaqf2.centralindia-01.azurewebsites.net' || 'https://localhost:7142';
+const API_BASE_URL = 'https://edusynckhushhalbackend-edf5b3e2ajhyaqf2.centralindia-01.azurewebsites.net'; 
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,

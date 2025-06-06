@@ -3,8 +3,8 @@ import axios from 'axios';
 
 // Ensure this matches your backend's HTTPS port and the one used in other services
 // const API_BASE_URL = 'https://localhost:7142'; 
-const API_BASE_URL = 'https://edusynckhushhalbackend-edf5b3e2ajhyaqf2.centralindia-01.azurewebsites.net' || 'https://localhost:7142';
-
+// const API_BASE_URL = 'https://edusynckhushhalbackend-edf5b3e2ajhyaqf2.centralindia-01.azurewebsites.net' || 'https://localhost:7142';
+const API_BASE_URL = 'https://edusynckhushhalbackend-edf5b3e2ajhyaqf2.centralindia-01.azurewebsites.net'; 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {

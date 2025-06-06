@@ -2,8 +2,8 @@
 import axios from 'axios';
 
 // Ensure this matches your backend's HTTPS port and the one used in other services
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7142'; 
-
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7142'; 
+const API_BASE_URL = 'https://edusynckhushhalbackend-edf5b3e2ajhyaqf2.centralindia-01.azurewebsites.net'; 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   // For file uploads, 'Content-Type' will be 'multipart/form-data',
