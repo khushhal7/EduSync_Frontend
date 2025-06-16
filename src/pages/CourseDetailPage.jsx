@@ -182,9 +182,9 @@ function CourseDetailPage() {
             </div>
           )}
           {/* === END MODIFIED Course Media Section === */}
-        </div>
+        {/* </div>
         <div className="card-footer text-muted"> Course ID: {course.courseId} </div>
-      </div>
+      </div> */}
 
       <div className="card shadow-sm"> {/* ... assessments card JSX ... */}
         <div className="card-header d-flex justify-content-between align-items-center">
