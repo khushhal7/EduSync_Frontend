@@ -77,7 +77,9 @@ function Navbar() {
               <>
                 <li className="nav-item me-3">
                   <span className="navbar-text text-white small">
-                    Welcome, {currentUser.name}! ({currentUser.role})
+                    Welcome, {currentUser.name}! 
+                    
+                    {/* ({currentUser.role}) */}
                   </span>
                 </li>
                 <li className="nav-item">

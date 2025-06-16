@@ -151,7 +151,7 @@ function CreateCoursePage() {
                 </div>
 
                 <div className="mb-3">
-                  <label htmlFor="mediaFileInput" className="form-label fw-semibold">Course Media (Optional)</label>
+                  <label htmlFor="mediaFileInput" className="form-label fw-semibold">Course Media</label>
                   <input
                     type="file"
                     className="form-control"
